@@ -9,23 +9,23 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Entity
-@Table(name = "SPACE_SHIPS")
+@Table(name = "USERS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SpaceShip {
-
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
+    @Column(name = "email", nullable = false, length = 100)
+    private String email;
 
-    @Column(name = "movie", nullable = false, length = 100)
-    private String movie;
+    @Column(name = "password", nullable = false, length = 100)
+    private String password;
 
+    @Column(name = "role", nullable = false, length = 100)
+    private String role;
 }
