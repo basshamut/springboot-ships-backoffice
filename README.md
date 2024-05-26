@@ -26,3 +26,8 @@ Desarrollar, utilizando Maven, Spring Boot, y Java, una API que permita hacer un
 - Documentación de la API.
 - Seguridad del API.
 - Implementar algún consumer/producer para algún broker (Rabbit, Kafka, etc).
+
+
+## Solución
+- Docker build: docker build -t spring-boot-docker .
+- Swagger: http://localhost:8080/swagger-ui.html
