@@ -9,9 +9,9 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public interface SpaceShipRepository extends CrudRepository<SpaceShip, Integer> {
-    Page<SpaceShip> findAll(Pageable pageable);
-    Set<SpaceShip> findByNameContaining(String name);
+public interface MovieSpaceShipRepository extends CrudRepository<MovieSpaceShip, Integer> {
+    Page<MovieSpaceShip> findAll(Pageable pageable);
+    Set<MovieSpaceShip> findByNameContaining(String name);
     @Override
-    Optional<SpaceShip> findById(Integer integer);
+    Optional<MovieSpaceShip> findById(Integer integer);
 }

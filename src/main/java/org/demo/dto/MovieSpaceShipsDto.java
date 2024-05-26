@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SpaceShipDto {
+public class MovieSpaceShipsDto {
     private int id;
     private String name;
     private String movie;

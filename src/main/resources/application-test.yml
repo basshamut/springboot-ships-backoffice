@@ -1,0 +1,27 @@
+spring:
+  jackson:
+    default-property-inclusion: NON_NULL
+  resources:
+    add-mappings: true
+  banner:
+    location: classpath:banner.txt
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:qa_db;MODE=Mysql
+    username: root
+    password: 12345
+    initialization-mode: always
+  jpa:
+    hibernate:
+      ddl-auto: none
+    generate-ddl: false
+    open-in-view: false
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /console
+  flyway:
+    enabled: true
+    locations: classpath:/migrations
