@@ -29,5 +29,16 @@ Desarrollar, utilizando Maven, Spring Boot, y Java, una API que permita hacer un
 
 
 ## Solución
+- Autenticación: Se implementó autenticación básica con Spring Security.
+  username: test@test.com
+  password: 
+  {
+      "username": "test@test.com",
+      "password": "bWlDb250cmFzZcOxYTEyMw=="
+  }
 - Docker build: docker build -t spring-boot-docker .
 - Swagger: http://localhost:8080/swagger-ui.html
+- RabbitMQ  
+- - docker pull rabbitmq:3-management 
+- - docker run -d -p 9090:15672 -p 9091:5672 --name rabbitmq rabbitmq:3-management 
+- - Dashboard: http://localhost:9090/
