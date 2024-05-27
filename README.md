@@ -34,7 +34,7 @@ Desarrolla una API utilizando Maven, Spring Boot y Java para el mantenimiento CR
 ## Solución
 
 ### Autenticación
-Se implementó autenticación básica con Spring Security.
+Se implementó autenticación JWT con Spring Security.
 
 - **Username:** `test@test.com`
 - **Password:** `bWlDb250cmFzZcOxYTEyMw==` (El password es `miContraseña123` en Base64)
