@@ -1,44 +1,70 @@
-## Prueba técnica Spring Boot
+# Prueba Técnica Spring Boot
 
-**Importante:** Se debe utilizar la última versión LTS de Java, Spring Boot y de cualquier librería utilizada en el proyecto.
+**Importante:** Utiliza la última versión LTS de Java, Spring Boot, y cualquier otra librería utilizada en el proyecto.
 
-Desarrollar, utilizando Maven, Spring Boot, y Java, una API que permita hacer un mantenimiento CRUD de naves espaciales de series y películas. Este mantenimiento debe permitir:
+## Descripción
 
-- Consultar todas las naves utilizando paginación.
-- Consultar una única nave por id.
-- Consultar todas las naves que contienen, en su nombre, el valor de un parámetro enviado en la petición. Por ejemplo, si enviamos “wing” devolverá “x-wing”.
+Desarrolla una API utilizando Maven, Spring Boot y Java para el mantenimiento CRUD de naves espaciales de series y películas. La API debe permitir:
+
+- Consultar todas las naves con paginación.
+- Consultar una nave por su ID.
+- Consultar todas las naves que contengan un valor específico en su nombre (por ejemplo, "wing" devuelve "x-wing").
 - Crear una nueva nave.
-- Modificar una nave.
+- Modificar una nave existente.
 - Eliminar una nave.
-- Test unitario de como mínimo de una clase.
-- Desarrollar un @Aspect que añada una línea de log cuando nos piden una nave con un id negativo.
+- Realizar pruebas unitarias de al menos una clase.
+- Desarrollar un @Aspect que registre en el log cuando se solicite una nave con un ID negativo.
 - Gestión centralizada de excepciones.
-- Utilizar cachés de algún tipo.
+- Utilizar algún tipo de caché.
 
-**Puntos a tener en cuenta:**
-- Las naves se deben guardar en una base de datos. Puede ser, por ejemplo, H2 en memoria.
-- La prueba se debe presentar en un repositorio de Git. No hace falta que esté publicado. Se puede enviar comprimido en un único archivo.
+## Requisitos
 
-**Puntos opcionales de mejora:**
-- Utilizar alguna librería que facilite el mantenimiento de los scripts DDL de base de datos.
-- Test de integración.
-- Presentar la aplicación dockerizada.
-- Documentación de la API.
-- Seguridad del API.
-- Implementar algún consumer/producer para algún broker (Rabbit, Kafka, etc).
+- Las naves deben guardarse en una base de datos, como H2 en memoria.
+- Presenta la prueba en un repositorio de Git. No es necesario publicarlo, puedes enviarlo comprimido en un único archivo.
 
+## Opcionales
+
+- Utilizar una librería para el mantenimiento de scripts DDL de base de datos.
+- Realizar pruebas de integración.
+- Dockerizar la aplicación.
+- Documentar la API.
+- Implementar seguridad en la API.
+- Implementar algún consumer/producer para un broker (RabbitMQ, Kafka, etc).
 
 ## Solución
-- Autenticación: Se implementó autenticación básica con Spring Security.
-  username: test@test.com
-  password: 
-  {
-      "username": "test@test.com",
-      "password": "bWlDb250cmFzZcOxYTEyMw=="
-  }
-- Docker build: docker build -t spring-boot-docker .
-- Swagger: http://localhost:8080/swagger-ui.html
-- RabbitMQ  
-- - docker pull rabbitmq:3-management 
-- - docker run -d -p 9090:15672 -p 9091:5672 --name rabbitmq rabbitmq:3-management 
-- - Dashboard: http://localhost:9090/
+
+### Autenticación
+Se implementó autenticación básica con Spring Security.
+
+- **Username:** `test@test.com`
+- **Password:** `bWlDb250cmFzZcOxYTEyMw==` (El password es `miContraseña123` en Base64)
+
+### Construcción y Ejecución
+
+#### Docker
+
+Construir la imagen Docker:
+```bash
+docker build -t spring-boot-docker .
+```
+
+#### Swagger
+
+La documentación de la API está disponible en:
+[Swagger UI](http://localhost:8080/swagger-ui.html)
+
+#### RabbitMQ
+
+Para ejecutar RabbitMQ:
+
+1. Descargar la imagen de RabbitMQ con gestión:
+    ```bash
+    docker pull rabbitmq:3-management
+    ```
+2. Ejecutar el contenedor de RabbitMQ:
+    ```bash
+    docker run -d -p 9090:15672 -p 9091:5672 --name rabbitmq rabbitmq:3-management
+    ```
+3. Acceder al Dashboard de RabbitMQ:
+   [RabbitMQ Dashboard](http://localhost:9090)
+
