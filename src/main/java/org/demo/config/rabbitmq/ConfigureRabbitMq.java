@@ -1,6 +1,6 @@
 package org.demo.config.rabbitmq;
 
-import org.demo.service.ReceiverService;
+import org.demo.service.RabbitMQReceiverService;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -31,6 +31,6 @@ public class ConfigureRabbitMq {
     }
 
     @Bean
-    public MessageListenerAdapter listenerAdapter(ReceiverService receiver) {
+    public MessageListenerAdapter listenerAdapter(RabbitMQReceiverService receiver) {
         return new MessageListenerAdapter(receiver, "receiveMessage");
     }}

@@ -1,5 +1,6 @@
 package org.demo.config.security.provider;
 
+import org.demo.service.KafkaSenderService;
 import org.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,6 +36,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private KafkaSenderService kafkaSenderService;
+
     @Override
     public Authentication authenticate(Authentication authentication) {
         final String username = authentication.getName();
@@ -42,11 +46,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         var attempsValue = 0;
 
         checkIfNumberOfPossibleAttemptsReached(attemps);
-
-//        var user = AuthDto.builder().username("test")
-//                .password("JDJhJDEwJGtoQmg0cE9FSHpJS0M3VTZNc1A5dmUyTU9hYkpFTFpzS0N3dG9YWkUyRDVzNFBJakRYdVdt")
-//                .authoritiesInString(List.of("ROLE_ADMIN"))
-//                .build(); //TODO enchufar aqui la operacion de carga de usuario
 
         var user = userService.loadUserByUsername(username);
 
@@ -74,6 +73,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     throw new BadCredentialsException("Incorrect username or password!");
                 }
 
+                kafkaSenderService.sendMessage("login-attempts", "User reached maximum login attempts!");
                 throw new BadCredentialsException("Number of possible attempts reached!");
             }
         } else {
@@ -81,7 +81,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         }
     }
 
-    private static void checkIfNumberOfPossibleAttemptsReached(Cache.ValueWrapper attemps) {
+    private void checkIfNumberOfPossibleAttemptsReached(Cache.ValueWrapper attemps) {
         if (Objects.nonNull(attemps)) {
             var attempsValue = (Integer) Objects.requireNonNull(attemps.get());
             if (attempsValue >= 5) {

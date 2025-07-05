@@ -7,7 +7,7 @@ import java.util.concurrent.CountDownLatch;
 
 @Service
 @Slf4j
-public class ReceiverService{
+public class RabbitMQReceiverService {
     private final CountDownLatch latch = new CountDownLatch(1);
 
     public void receiveMessage(String message) {

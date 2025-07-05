@@ -1,133 +1,207 @@
-# Prueba Técnica Spring Boot
+# API de Gestión de Naves Espaciales
 
-**Importante:** Utiliza la última versión LTS de Java, Spring Boot, y cualquier otra librería utilizada en el proyecto.
+Este proyecto implementa una API RESTful completa para la gestión de naves espaciales de películas y series, desarrollada con Spring Boot y Java 21.
 
-## Descripción
+## Tabla de Contenidos
 
-Desarrolla una API utilizando Maven, Spring Boot y Java para el mantenimiento CRUD de naves espaciales de series y películas. La API debe permitir:
+- [Características](#características)
+- [Tecnologías](#tecnologías)
+- [Arquitectura](#arquitectura)
+- [Instalación y Ejecución](#instalación-y-ejecución)
+- [Seguridad y Autenticación](#seguridad-y-autenticación)
+- [Documentación de la API](#documentación-de-la-api)
+- [Integración con Sistemas de Mensajería](#integración-con-sistemas-de-mensajería)
+- [Base de Datos](#base-de-datos)
+- [Pruebas](#pruebas)
 
-- Consultar todas las naves con paginación.
-- Consultar una nave por su ID.
-- Consultar todas las naves que contengan un valor específico en su nombre (por ejemplo, "wing" devuelve "x-wing").
-- Crear una nueva nave.
-- Modificar una nave existente.
-- Eliminar una nave.
-- Realizar pruebas unitarias de al menos una clase.
-- Desarrollar un @Aspect que registre en el log cuando se solicite una nave con un ID negativo.
-- Gestión centralizada de excepciones.
-- Utilizar algún tipo de caché.
+## Características
 
-## Requisitos
+El sistema implementa todas las operaciones CRUD para naves espaciales:
 
-- Las naves deben guardarse en una base de datos, como H2 en memoria.
-- Presenta la prueba en un repositorio de Git. No es necesario publicarlo, puedes enviarlo comprimido en un único archivo.
+- **Consultas avanzadas**:
+  - Listado completo con paginación y ordenamiento
+  - Búsqueda por ID
+  - Búsqueda por nombre (parcial o completo)
+  - Filtrado por múltiples criterios
 
-## Opcionales
+- **Operaciones de modificación**:
+  - Creación de nuevas naves
+  - Actualización de naves existentes
+  - Eliminación de naves
 
-- Utilizar una librería para el mantenimiento de scripts DDL de base de datos.
-- Realizar pruebas de integración.
-- Dockerizar la aplicación.
-- Documentar la API.
-- Implementar seguridad en la API.
-- Implementar algún consumer/producer para un broker (RabbitMQ, Kafka, etc).
+- **Características avanzadas**:
+  - Caché para optimizar rendimiento
+  - Gestión centralizada de excepciones
+  - Logging mediante aspectos AOP
+  - Validación de datos de entrada
+  - Mensajería asíncrona con RabbitMQ y Kafka
 
-## Solución
+## Tecnologías
 
-### Autenticación
-Se implementó autenticación básica con Spring Security.
+- **Backend**: Java 21, Spring Boot 3.x
+- **Base de datos**: H2 (embebida)
+- **Migración de datos**: Flyway
+- **Seguridad**: Spring Security con JWT
+- **Documentación**: OpenAPI (Swagger)
+- **Mensajería**: RabbitMQ, Apache Kafka
+- **Contenedorización**: Docker, Docker Compose
+- **Pruebas**: JUnit 5, Mockito, Cucumber (BDD)
 
-- **Username:** `test@test.com`
-- **Password:** `bWlDb250cmFzZcOxYTEyMw==` (El password es `miContraseña123` en Base64)
+## Arquitectura
 
-### Construcción y Ejecución
+El proyecto sigue una arquitectura por capas:
 
-#### Requisitos Previos
-- Java 21
-- Maven
-- Docker y Docker Compose
+- **Controladores**: Gestión de endpoints REST
+- **DTOs**: Objetos de transferencia de datos
+- **Servicios**: Lógica de negocio
+- **Repositorios**: Acceso a datos
+- **Entidades**: Modelos de datos
+- **Configuración**: Setup de componentes y servicios
+- **Excepciones**: Manejo centralizado de errores
+- **Utilidades**: Funciones auxiliares
 
-#### Ambiente de Desarrollo con Docker Compose
+Además, implementa patrones de diseño como:
+- Repository
+- DTO (Data Transfer Object)
+- Dependency Injection
+- Aspect-Oriented Programming
 
-El proyecto incluye un ambiente de desarrollo completo usando Docker Compose que incluye:
-- La aplicación Spring Boot
-- RabbitMQ con interfaz de gestión
-- Base de datos H2 en memoria
+## Instalación y Ejecución
 
-Para iniciar el ambiente:
+### Requisitos Previos
 
-1. Construir el proyecto:
-```bash
-mvn clean package
-```
+- Java 21 JDK
+- Maven 3.8+
+- Docker y Docker Compose (opcional, para contenedorización)
 
-2. Iniciar los servicios:
-```bash
-docker-compose up -d
-```
+### Métodos de Ejecución
 
-3. Ver los logs:
-```bash
-docker-compose logs -f
-```
+#### Con Docker Compose (Recomendado)
 
-4. Detener los servicios:
-```bash
-docker-compose down
-```
+El proyecto incluye configuración completa para un entorno de desarrollo con:
+- Aplicación Spring Boot
+- RabbitMQ con interfaz de administración
+- Kafka con su gestor UI
+- Base de datos H2
 
-#### Accesos a los Servicios
+Pasos:
 
-- **API REST:** http://localhost:8080
-- **Swagger UI:** http://localhost:8080/swagger-ui.html
-- **RabbitMQ Management:** http://localhost:15672
+1. **Compilar el proyecto**:
+   ```bash
+   mvn clean package
+   ```
+
+2. **Iniciar el entorno**:
+   ```bash
+   docker-compose up -d
+   ```
+
+3. **Verificar los logs**:
+   ```bash
+   docker-compose logs -f
+   ```
+
+4. **Detener el entorno**:
+   ```bash
+   docker-compose down
+   ```
+
+#### Ejecución Local (sin Docker)
+
+1. **Compilar el proyecto**:
+   ```bash
+   mvn clean package
+   ```
+
+2. **Ejecutar la aplicación**:
+   ```bash
+   java -jar target/springboot-ships-backoffice-1.0-SNAPSHOT.jar
+   ```
+
+### Acceso a los Servicios
+
+- **API REST**: http://localhost:8080
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **RabbitMQ Management**: http://localhost:15672
   - Usuario: `guest`
   - Contraseña: `guest`
+- **Kafka UI**: http://localhost:9000
 
-#### Desarrollo Local (sin Docker)
+## Seguridad y Autenticación
 
-Si prefieres ejecutar la aplicación sin Docker:
+El proyecto implementa un sistema de autenticación basado en JWT (JSON Web Token) con Spring Security:
 
-1. Construir el proyecto:
-```bash
-mvn clean package
-```
+- **Inicio de Sesión**: POST a `/api/login` con credenciales
+- **Autenticación**: Token JWT incluido en header Authorization
+- **Permisos**: Roles configurados en Spring Security
+- **Expiración**: Tokens con tiempo limitado de validez
 
-2. Ejecutar la aplicación:
-```bash
-java -jar target/springboot-ships-backoffice-1.0-SNAPSHOT.jar
-```
+Credenciales para pruebas:
+- **Usuario**: `test@test.com`
+- **Contraseña**: `miContraseña123` (o en Base64: `bWlDb250cmFzZcOxYTEyMw==`)
 
-#### RabbitMQ (Desarrollo Local)
+## Documentación de la API
+
+La API está completamente documentada con OpenAPI (Swagger):
+- **URL de acceso**: http://localhost:8080/swagger-ui.html
+- **Endpoints principales**:
+  - `/api/ships` - Operaciones CRUD para naves
+  - `/api/login` - Autenticación
+  - `/api/kafka` - Operaciones con Kafka
+  - `/api/rabbitmq` - Operaciones con RabbitMQ
+
+## Integración con Sistemas de Mensajería
+
+### RabbitMQ
+
+El proyecto integra RabbitMQ para comunicación asíncrona:
+
+- **Configuración**: Definida en `application.yml`
+- **Controlador**: `RabbitMQController` expone endpoints para envío de mensajes
+- **Consumidores**: Procesan mensajes recibidos
+
+#### Ejecución de RabbitMQ Local
 
 Si necesitas ejecutar RabbitMQ localmente sin Docker Compose:
 
-1. Descargar la imagen de RabbitMQ con gestión:
-```bash
-docker pull rabbitmq:3-management
-```
-
-2. Ejecutar el contenedor de RabbitMQ:
 ```bash
 docker run -d -p 9090:15672 -p 9091:5672 --name rabbitmq rabbitmq:3-management
 ```
 
-3. Acceder al Dashboard de RabbitMQ:
-   [RabbitMQ Dashboard](http://localhost:15672)
+### Kafka
 
-### Características Implementadas
+El sistema también utiliza Apache Kafka para eventos relacionados con naves espaciales:
 
-- ✅ CRUD completo de naves espaciales
-- ✅ Paginación en consultas
-- ✅ Búsqueda por nombre
-- ✅ Pruebas unitarias
-- ✅ Aspect para logging de IDs negativos
-- ✅ Gestión centralizada de excepciones
-- ✅ Caché con Caffeine
-- ✅ Base de datos H2 en memoria
-- ✅ Flyway para migraciones de base de datos
-- ✅ Documentación con Swagger/OpenAPI
-- ✅ Autenticación con Spring Security
-- ✅ Integración con RabbitMQ
-- ✅ Docker y Docker Compose
-- ✅ Pruebas de integración con Cucumber
+- **Configuración**: Definida en `application.yml`
+- **Productores**: Envían eventos en operaciones CRUD (`KafkaSenderService`)
+- **Consumidores**: Procesan mensajes asíncronos (`KafkaReceiverService`)
+- **Controlador**: `KafkaController` permite enviar mensajes y verificar estados
 
+## Base de Datos
+
+La aplicación utiliza H2 como base de datos embebida:
+
+- **Migraciones**: Gestionadas por Flyway
+- **Modelo de datos**: Entidades definidas en el paquete repository
+- **Scripts**: Ubicados en `resources/migrations/`
+
+El esquema incluye:
+- Tabla de naves espaciales (`space_ships`)
+- Tabla de usuarios (`users`)
+
+## Pruebas
+
+El proyecto incluye:
+
+- **Pruebas unitarias**: Con JUnit 5 y Mockito
+- **Pruebas de integración**: Con Cucumber (BDD)
+- **Tests de rendimiento**: Para verificar tiempos de respuesta
+
+### Ejecución de Pruebas
+
+```bash
+mvn test                 # Ejecutar pruebas unitarias
+mvn verify               # Ejecutar todas las pruebas incluyendo integración
+```
+
+Las pruebas de integración utilizan escenarios Cucumber ubicados en `src/test/resources/integration/cucumber/`.
