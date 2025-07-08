@@ -308,7 +308,7 @@
           "refId": "A"
         }
       ],
-      "title": "Total Audit Messages Sent",
+      "title": "Total Audit Messages Sent (RabbitMQ)",
       "type": "gauge"
     },
     {
