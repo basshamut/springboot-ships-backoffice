@@ -176,6 +176,7 @@ El sistema también utiliza Apache Kafka para eventos relacionados con naves esp
 - **Productores**: Envían eventos en operaciones CRUD (`KafkaSenderService`)
 - **Consumidores**: Procesan mensajes asíncronos (`KafkaReceiverService`)
 - **Controlador**: `KafkaController` permite enviar mensajes y verificar estados
+- **Volumenes**: Configurados para persistencia de datos estan en el directorio interno de Docker
 
 ## Base de Datos
 

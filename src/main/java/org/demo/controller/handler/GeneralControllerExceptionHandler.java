@@ -7,6 +7,7 @@ import org.demo.exception.ServiceException;
 import org.demo.utils.FormatUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,13 +18,13 @@ import java.util.Arrays;
 @Slf4j
 public class GeneralControllerExceptionHandler {
 
-    @ExceptionHandler(value = {Exception.class})
+    @ExceptionHandler(value = {BadCredentialsException.class})
     @ResponseBody
-    public ResponseEntity<HttpErrorInfoJson> handleException(Exception exception, HttpServletRequest request) {
-        HttpErrorInfoJson httpErrorInfoJson = FormatUtils.httpErrorInfoFormatted(HttpStatus.INTERNAL_SERVER_ERROR, request, exception);
+    public ResponseEntity<HttpErrorInfoJson> handleBadCredentialsException(BadCredentialsException badCredentialsException, HttpServletRequest request) {
+        HttpErrorInfoJson httpErrorInfoJson = FormatUtils.httpErrorInfoFormatted(HttpStatus.UNAUTHORIZED, request, badCredentialsException);
         log.error(httpErrorInfoJson.toString());
-        log.error(Arrays.toString(exception.getStackTrace()));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(httpErrorInfoJson);
+        log.error(Arrays.toString(badCredentialsException.getStackTrace()));
+        return new ResponseEntity<>(httpErrorInfoJson, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(value = {ServiceException.class})

@@ -3,3 +3,6 @@ server:
 spring:
   profiles:
     active: des
+  application:
+    name: springboot-ships-backoffice
+

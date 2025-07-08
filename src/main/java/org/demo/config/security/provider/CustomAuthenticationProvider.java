@@ -1,7 +1,9 @@
 package org.demo.config.security.provider;
 
-import org.demo.service.KafkaSenderService;
+import org.demo.dto.LoginAttemptDto;
 import org.demo.service.UserService;
+import org.demo.service.kafka.KafkaSenderService;
+import org.demo.service.telemetry.MetricsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
@@ -16,12 +18,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
 import static org.demo.utils.Constants.LOGIN_ATTEMPTS_CACHE;
+import static org.demo.utils.Constants.LOGIN_ATTEMPTS_TOPIC;
 
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
@@ -39,13 +44,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private KafkaSenderService kafkaSenderService;
 
+    @Autowired
+    private MetricsService metricsService;
+
     @Override
     public Authentication authenticate(Authentication authentication) {
         final String username = authentication.getName();
         final var attemps = Objects.requireNonNull(cacheManagerLogin.getCache(LOGIN_ATTEMPTS_CACHE)).get(username);
         var attempsValue = 0;
 
-        checkIfNumberOfPossibleAttemptsReached(attemps);
+        checkIfNumberOfPossibleAttemptsReached(attemps, username);
 
         var user = userService.loadUserByUsername(username);
 
@@ -68,26 +76,33 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 }
 
                 attempsValue = (Integer) Objects.requireNonNull(attemps.get());
-                if (attempsValue < 5) {
-                    Objects.requireNonNull(cacheManagerLogin.getCache(LOGIN_ATTEMPTS_CACHE)).put(username, attempsValue + 1);
-                    throw new BadCredentialsException("Incorrect username or password!");
-                }
-
-                kafkaSenderService.sendMessage("login-attempts", "User reached maximum login attempts!");
-                throw new BadCredentialsException("Number of possible attempts reached!");
+                Objects.requireNonNull(cacheManagerLogin.getCache(LOGIN_ATTEMPTS_CACHE)).put(username, attempsValue + 1);
+                throw new BadCredentialsException("Incorrect username or password!");
             }
         } else {
             throw new UsernameNotFoundException("User not found!");
         }
     }
 
-    private void checkIfNumberOfPossibleAttemptsReached(Cache.ValueWrapper attemps) {
-        if (Objects.nonNull(attemps)) {
-            var attempsValue = (Integer) Objects.requireNonNull(attemps.get());
-            if (attempsValue >= 5) {
-                throw new BadCredentialsException("Number of possible attempts reached!");
+    private void checkIfNumberOfPossibleAttemptsReached(Cache.ValueWrapper attemps, String username) {
+        metricsService.executeWithTracing("checkIfNumberOfPossibleAttemptsReached", () -> {
+            if (Objects.nonNull(attemps)) {
+                var attempsValue = (Integer) Objects.requireNonNull(attemps.get());
+                if (attempsValue >= 5) {
+
+                    var loginAttemptDto = LoginAttemptDto.builder()
+                            .username(username)
+                            .message("User reached maximum login attempts")
+                            .attempts(attempsValue)
+                            .timestamp(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
+                            .build();
+
+                    kafkaSenderService.sendMessage(LOGIN_ATTEMPTS_TOPIC, loginAttemptDto);
+                    metricsService.incrementKafkaMessagesSent();
+                    throw new BadCredentialsException("Number of possible attempts reached!");
+                }
             }
-        }
+        });
     }
 
     @Override

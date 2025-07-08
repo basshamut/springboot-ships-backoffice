@@ -7,8 +7,8 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.demo.controller.MovieSpaceShipsController;
 import org.demo.dto.MovieSpaceShipsDto;
-import org.demo.integration.cucumber.config.CucumberSpringConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.demo.integration.cucumber.config.CucumberSpringConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.UnsupportedEncodingException;
