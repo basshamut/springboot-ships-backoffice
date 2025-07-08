@@ -164,25 +164,25 @@ El sistema implementa mensajería asíncrona utilizando **RabbitMQ** y **Apache 
 ### Arquitectura General de Mensajería
 
 ```
-┌────────────────────────────┐
-│    Spring Boot App         │
-│ (Operación de Negocio)     │
-└─────────────┬──────────────┘
-              │
-              ▼
+    ┌────────────────────────────┐
+    │    Spring Boot App         │
+    │ (Operación de Negocio)     │
+    └─────────────┬──────────────┘
+                  │
+                  ▼
    ┌────────────────────────────┐
    │ Servicio Productor         │
    │ (KafkaSenderService        │
    │  o RabbitMQSenderService)  │
-   └───────┬─────────┬─────────┘
-           │         │
-           │         │
-           ▼         ▼
+   └────┬──────────────────┬────┘
+        │                  │
+        │                  │
+        ▼                  ▼
 ┌────────────────┐ ┌────────────────┐
 │   Kafka Topic  │ │  RabbitMQ Cola │
 └───────┬────────┘ └───────┬────────┘
-        │                 │
-        ▼                 ▼
+        │                  │
+        ▼                  ▼
 ┌────────────────┐ ┌────────────────────┐
 │ Servicio       │ │ Servicio           │
 │ Consumidor     │ │ Consumidor         │
@@ -191,12 +191,12 @@ El sistema implementa mensajería asíncrona utilizando **RabbitMQ** y **Apache 
 └───────┬────────┘ └─────────┬──────────┘
         │                    │
         ▼                    ▼
-┌────────────────────────────────────────┐
-│ Procesamiento final:                   │
+┌───────────────────────────────────────┐
+│ Procesamiento final:                  │
 │ - Persistencia                        │
 │ - Logging                             │
 │ - Notificaciones                      │
-└────────────────────────────────────────┘
+└───────────────────────────────────────┘
 ```
 
 ---
