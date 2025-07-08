@@ -1,7 +1,7 @@
 package org.demo.service.mapper;
 
 import org.demo.dto.MovieSpaceShipsDto;
-import org.demo.repository.MovieSpaceShip;
+import org.demo.persistance.entities.MovieSpaceShip;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

@@ -38,23 +38,21 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/console/**",
             "/error",
+            "/actuator/**",
             API_VERSION_PATH + LOGIN_PATH
     };
 
-    // Configuring HttpSecurity
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
                     try {
-                        // Create MvcRequestMatchers for MVC endpoints
                         for (String pattern : WHITE_LIST) {
                             auth.requestMatchers(new MvcRequestMatcher(introspector, pattern)).permitAll();
                         }
                     } catch (Exception e) {
                         throw new RuntimeException("Failed to configure MVC request matchers", e);
                     }
-                    // Add AntPathRequestMatcher for other endpoints
                     auth.requestMatchers(new AntPathRequestMatcher("/console/**")).permitAll();
                     auth.anyRequest().authenticated();
                 })

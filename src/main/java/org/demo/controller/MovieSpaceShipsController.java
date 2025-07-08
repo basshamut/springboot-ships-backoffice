@@ -51,7 +51,7 @@ public class MovieSpaceShipsController {
     }
 
     @PutMapping(path = "/space-ships/{id}")
-    public ResponseEntity<MovieSpaceShipsDto> update(@PathVariable int id, @RequestBody MovieSpaceShipsDto movieSpaceShipsDto) {
+    public ResponseEntity<MovieSpaceShipsDto> update(@PathVariable long id, @RequestBody MovieSpaceShipsDto movieSpaceShipsDto) {
         movieSpaceShipsDto.setId(id);
         movieSpaceShipService.updateSpaceShip(movieSpaceShipsDto);
         return ResponseEntity.ok().build();
