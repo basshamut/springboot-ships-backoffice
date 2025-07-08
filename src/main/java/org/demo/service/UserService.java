@@ -2,7 +2,7 @@ package org.demo.service;
 
 import lombok.AllArgsConstructor;
 import org.demo.dto.AuthDto;
-import org.demo.repository.UserRepository;
+import org.demo.persistance.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Base64;

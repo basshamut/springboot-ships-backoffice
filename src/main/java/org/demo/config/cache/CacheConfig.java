@@ -21,7 +21,7 @@ public class CacheConfig {
     public CacheManager cacheManagerLogin() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(LOGIN_ATTEMPTS_CACHE);
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .expireAfterWrite(24, TimeUnit.HOURS)
+                .expireAfterWrite(1, TimeUnit.HOURS)
                 .maximumSize(100));
         return cacheManager;
     }

@@ -6,7 +6,6 @@ public class Constants {
     //Auth
     public static final String AUTH_PATH = "/auth";
     public static final String LOGIN_PATH = "/login";
-    public static final String LOGIN_URL = API_VERSION_PATH + AUTH_PATH + LOGIN_PATH;
 
     //Cache
     public static final String LOGIN_ATTEMPTS_CACHE = "loginAttempts";
@@ -17,5 +16,14 @@ public class Constants {
     public static final Integer TOKEN_EXPIRATION_TIME_IN_MINUTES = 1440; //One day
     public static final String HEADER_AUTHORIZACION_KEY = "Authorization";
     public static final String TOKEN_BEARER_PREFIX = "Bearer ";
+
+    //KAFKA
+    public static final String SHIPS_CONSUMER_GROUP = "ships-consumer-group";
+    public static final String LOGIN_ATTEMPTS_TOPIC = "login-attempts";
+
+    //RabbitMQ
+    public static final String AUDIT_QUEUE = "audit-queue";
+
+
 
 }

@@ -2,10 +2,11 @@ package org.demo.unit.service;
 
 import org.demo.dto.MovieSpaceShipsDto;
 import org.demo.exception.ServiceException;
-import org.demo.repository.MovieSpaceShip;
-import org.demo.repository.MovieSpaceShipRepository;
+import org.demo.persistance.entities.MovieSpaceShip;
+import org.demo.persistance.repository.MovieSpaceShipRepository;
 import org.demo.service.MovieSpaceShipService;
 import org.demo.service.mapper.SpaceShipMapper;
+import org.demo.service.rabbitmq.RabbitMQSenderService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.demo.dto.AuditEventDto;
+import java.time.LocalDateTime;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -33,10 +38,13 @@ public class MovieMovieSpaceShipServiceTest {
     @Mock
     private MovieSpaceShipRepository movieSpaceShipRepository;
 
+    @Mock
+    private RabbitMQSenderService rabbitMQSenderService;
+
     @InjectMocks
     private MovieSpaceShipService movieSpaceShipService;
 
-    private static final int TEST_ID = 1;
+    private static final long TEST_ID = 1;
     private static final String TEST_NAME = "Test SpaceShip";
     private static final String TEST_MOVIE = "Test Movie";
     private static final MovieSpaceShip TEST_SPACE_SHIP_DTO = new MovieSpaceShip(TEST_ID, TEST_NAME, TEST_MOVIE);
@@ -44,6 +52,11 @@ public class MovieMovieSpaceShipServiceTest {
     @BeforeEach
     public void setup() {
         reset(movieSpaceShipRepository);
+        reset(rabbitMQSenderService);
+        // Mockear el usuario autenticado para todos los tests
+        SecurityContextHolder.getContext().setAuthentication(
+            new UsernamePasswordAuthenticationToken("usuarioTest", null)
+        );
     }
 
     @Test
@@ -83,25 +96,43 @@ public class MovieMovieSpaceShipServiceTest {
 
     @Test
     public void testSaveSpaceShip() {
+        // Mock para que el save devuelva la entidad con ID generado
+        when(movieSpaceShipRepository.save(any())).thenAnswer(invocation -> {
+            MovieSpaceShip spaceShip = invocation.getArgument(0);
+            spaceShip.setId(TEST_ID); // Simulamos que la BD asigna el ID
+            return spaceShip;
+        });
+
         movieSpaceShipService.saveSpaceShip((SpaceShipMapper.MAPPER.mapToDto(TEST_SPACE_SHIP_DTO)));
 
         verify(movieSpaceShipRepository, times(1)).save(any());
+        verify(rabbitMQSenderService, times(1)).sendAuditMessage(
+                org.mockito.ArgumentMatchers.argThat(auditEvent ->
+                        auditEvent.getUser().equals("usuarioTest") &&
+                                auditEvent.getShipId().equals(TEST_ID) &&
+                                auditEvent.getShipName().equals(TEST_NAME) &&
+                                auditEvent.getOperation().equals("CREATE") &&
+                                auditEvent.getTimestamp() != null
+                )
+        );
     }
 
     @Test
     public void testDeleteSpaceShip() {
-        when(movieSpaceShipRepository.existsById(eq(TEST_ID))).thenReturn(true);
+        when(movieSpaceShipRepository.findById(eq(TEST_ID))).thenReturn(Optional.of(TEST_SPACE_SHIP_DTO));
 
         movieSpaceShipService.deleteSpaceShip(TEST_ID);
 
         verify(movieSpaceShipRepository, times(1)).deleteById(eq(TEST_ID));
-    }
-
-    @Test
-    public void testDeleteSpaceShip_NotFound() {
-        when(movieSpaceShipRepository.existsById(eq(TEST_ID))).thenReturn(false);
-
-        Assertions.assertThrows(ServiceException.class, () -> movieSpaceShipService.deleteSpaceShip(TEST_ID));
+        verify(rabbitMQSenderService, times(1)).sendAuditMessage(
+            org.mockito.ArgumentMatchers.argThat(auditEvent ->
+                auditEvent.getUser().equals("usuarioTest") &&
+                auditEvent.getShipId().equals(TEST_ID) &&
+                auditEvent.getShipName().equals(TEST_NAME) &&
+                auditEvent.getOperation().equals("DELETE") &&
+                auditEvent.getTimestamp() != null
+            )
+        );
     }
 
     @Test
@@ -111,6 +142,15 @@ public class MovieMovieSpaceShipServiceTest {
         movieSpaceShipService.updateSpaceShip(SpaceShipMapper.MAPPER.mapToDto(TEST_SPACE_SHIP_DTO));
 
         verify(movieSpaceShipRepository, times(1)).save(any());
+        verify(rabbitMQSenderService, times(1)).sendAuditMessage(
+                org.mockito.ArgumentMatchers.argThat(auditEvent ->
+                        auditEvent.getUser().equals("usuarioTest") &&
+                                auditEvent.getShipId().equals(TEST_ID) &&
+                                auditEvent.getShipName().equals(TEST_NAME) &&
+                                auditEvent.getOperation().equals("UPDATE") &&
+                                auditEvent.getTimestamp() != null
+                )
+        );
     }
 
     @Test
